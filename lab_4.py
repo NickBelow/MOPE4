@@ -1,6 +1,6 @@
 import numpy as np
 
-def lab4(m, N):
+def lab_4(m, N):
     A = np.random.randint(Ymin, Ymax, (N, m))
     print("Згенерована матриця значень Y: ")
     for row in A:
@@ -22,88 +22,92 @@ def lab4(m, N):
                                                                                                b[6], b[7]))
     solve_y(b)
 
-    print("Перевірка однорідності дисперсії за критерієм Кохрена:")
-    D = []
-    for i in range(N):
-        Di = sum([(j - Y[i]) ** 2 for j in A[i]]) / m
-        D.append(round(Di, 3))
-
-    Dmax = max(D)
-    Dsum = sum(D)
-    Gp = Dmax / Dsum
-    print("Коефіцієнт Gp = ", round(Gp, 5))
-
-    f1 = m - 1
-    f2 = N
-    print("f1 = ", f1)
-    print("f2 = ", f2)
-
-    Gtable = {3: 0.4377, 4: 0.3910, 5: 0.3595, 6: 0.3362, 7: 0.3185, 8: 0.3043, 9: 0.2926,
-              10: 0.2829, range(11, 17): 0.2462, range(17, 37): 0.2022, range(37, 145): 0.1616}
-    Gt = Gtable.get(m)
-    print("За таблицею Gt = ", Gt)
-
-    if(Gp < Gt):
-        print("Gp < Gt, отже дисперсія однорідна. Критерій Кохрена виконується")
-
-        print("Оцінимо значимість коефіцієнтів регресії згідно критерію Стьюдента:")
+    def student():
+        print ( "Оцінимо значимість коефіцієнтів регресії згідно критерію Стьюдента:" )
         mD = Dsum / N
         Db = mD / (m * N)
-        sD = Db ** 0.5
-        print("Дисперсія відносності Db = ", round(Db, 3))
-        print("sD = ", round(sD, 3))
-        print("Оцінка за t-критерієм Стьюдента:")
-        t = []
-        for i in range(N):
-            T = abs(b[i]) / sD
-            t.append(round(T, 3))
+        sD = Db * 0.5
+        print ( "Дисперсія відносності Db = " , round ( Db , 3 ) )
+        print ( "sD = " , round ( sD , 3 ) )
+        print ( "Оцінка за t-критерієм Стьюдента:" )
+        t = [ ]
+        for i in range ( N ):
+            T = abs ( b[ i ] ) / sD
+            t.append ( round ( T , 3 ) )
         f3 = f1 * f2
-        print("f3 = ", f3)
+        print ( "f3 = " , f3 )
         Ttabl = 2.120
-        print("За таблицею в 16 рядку Ttabl = ", Ttabl)
+        print ( "За таблицею в 16 рядку Ttabl = " , Ttabl )
         d = 0
-        for i in range(N):
-            if (t[i] < Ttabl):
-                print("Коефіцієнт b{} є статистично незначущим, виключаємо його з рівняння регресії".format(i))
-                b[i] = 0
+        for i in range ( N ):
+            if (t[ i ] < Ttabl):
+                print ( "Коефіцієнт b{} є статистично незначущим, виключаємо його з рівняння регресії".format ( i ) )
+                b[ i ] = 0
             else:
                 d += 1
-                print(
+                print (
                     "Гіпотеза не підтверджується, тобто b{} – значимий коефіцієнт і він залишається в рівнянні регресії."
-                    .format(i))
+                        .format ( i ) )
         y = solve_y(b)
 
-        print("Перевірка адекватності за критерієм Фішера:")
-        print("Кількість значущих коефіцієнтів d = ", d)
+    def fisher():
+        print ( "Перевірка адекватності за критерієм Фішера:" )
+        print ( "Кількість значущих коефіцієнтів d = " , d )
         Dad = 0
-        for i in range(N):
-            Dad += (m / (N - d)) * ((y[i] - Y[i]) ** 2)
-        print("Дисперсія адекватності Dad = ", round(Dad, 3))
+        for i in range ( N ):
+            Dad += (m / (N - d)) * ((y[ i ] - Y[ i ]) * 2)
+        print ( "Дисперсія адекватності Dad = " , round ( Dad , 3 ) )
         Fp = Dad / Db
-        print("Перевірка адекватності Fp = ", round(Fp, 3))
+        print ( "Перевірка адекватності Fp = " , round ( Fp , 3 ) )
         f4 = N - d
-        print("f4 = ", f4)
-        Ftable = {1: 4.5, 2: 3.6, 3: 3.2, 4: 3.0, 5: 2.9, 6: 2.7, 7: 2.4}
-        Ft = Ftable.get(f4)
-        print("За таблицею Ft = ", Ft)
+        print ( "f4 = " , f4 )
+        Ftable = {1: 4.5 , 2: 3.6 , 3: 3.2 , 4: 3.0 , 5: 2.9 , 6: 2.7 , 7: 2.4}
+        Ft = Ftable.get ( f4 )
+        print ( "За таблицею Ft = " , Ft )
         if (Fp < Ft):
-            print("Fp < Ft, отримана математична модель адекватна експериментальним даним.")
+            print ( "Fp < Ft, отримана математична модель адекватна експериментальним даним." )
         else:
-            print("Fp > Ft, отже, рівняння регресії неадекватно оригіналу")
+            print ( "Fp > Ft, отже, рівняння регресії неадекватно оригіналу" )
             m = 3
-            lab4(m, N)
+            lab_4 ( m , N )
             return
 
-    else:
-        print("Gp > Gt, отже дисперсія неоднорідна. Збільшуємо кількість дослідів на 1 ")
-        m = m + 1
-        lab4(m, N)
-        return
+    def kohren():
+        print("Перевірка однорідності дисперсії за критерієм Кохрена:")
+        D = []
+        for i in range(N):
+            Di = sum([(j - Y[i]) ** 2 for j in A[i]]) / m
+            D.append(round(Di, 3))
 
+        Dmax = max(D)
+        Dsum = sum(D)
+        Gp = Dmax / Dsum
+        print("Коефіцієнт Gp = ", round(Gp, 5))
 
+        f1 = m - 1
+        f2 = N
+        print("f1 = ", f1)
+        print("f2 = ", f2)
 
-def solve_y(b):
-    print("Значення y:")
+        Gtable = {3: 0.4377, 4: 0.3910, 5: 0.3595, 6: 0.3362, 7: 0.3185, 8: 0.3043, 9: 0.2926,
+                  10: 0.2829, range(11, 17): 0.2462, range(17, 37): 0.2022, range(37, 145): 0.1616}
+        Gt = Gtable.get(m)
+        print("За таблицею Gt = ", Gt)
+
+        if(Gp < Gt):
+            print("Gp < Gt, отже дисперсія однорідна. Критерій Кохрена виконується")
+
+            student()
+            fisher()
+        else:
+            print("Gp > Gt, отже дисперсія неоднорідна. Збільшуємо кількість дослідів на 1 ")
+            m = m + 1
+            lab_4(m, N)
+            return
+    kohren()
+
+    def solve_y(b):
+        print("Значення y:")
     y1 = b[0] + b[1] * X[0][0] + b[2] * X[0][1] + b[3] * X[0][2] + b[4] * X[0][0] * X[0][1] + b[5] * X[0][0] * X[0][2] + \
          b[6] * X[0][1] * X[0][2] + b[7] * X[0][0] * X[0][1] * X[0][2]
     y2 = b[0] + b[1] * X[1][0] + b[2] * X[1][1] + b[3] * X[1][2] + b[4] * X[1][0] * X[1][1] + b[5] * X[1][0] * X[1][2] + \
@@ -131,8 +135,8 @@ X2max = 20
 X2min = 60
 X3max = 50
 X3min = 55
-Ymax = 200 + (X1max + X2max + X3max)/3
-Ymin = 200 + (X1min + X2min + X3min)/3
+Ymin = 200 + (X1max + X2max + X3max)/3
+Ymax = 200 + (X1min + X2min + X3min)/3
 X = [[X1min, X2min, X3min],
      [X1min, X2min, X3max],
      [X1min, X2max, X3min],
@@ -166,4 +170,4 @@ for row in X:
           print("{:4d}".format(int(i)), end = " |")
       print()
 
-lab4(m, N)
+lab_4(m, N)
